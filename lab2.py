@@ -1,11 +1,14 @@
 import random
 import math
 import hashlib
+
+# Constantes
 default_pseudo_random=random.Random()
 default_crypto_random=random.SystemRandom()
-
 DEFAULT_ITERATION=20
 
+
+# Exponenciacion rápida con módulo
 def exp_rapida(n,e,m):
 	print n
 	print e
@@ -20,7 +23,8 @@ def exp_rapida(n,e,m):
 		return n*exp_rapida(n**2%m,(e-1)/2,m)%m
 		
 
-
+# Funcion auxiliar para Miller-Rabin, saca los factores de 2 y devuelve la 
+# cantidad k de factores de 2 que tiene n y n/2^k
 def sacar_los_2(n):
 	k=0
 	while (n%2==0):
@@ -28,8 +32,8 @@ def sacar_los_2(n):
 		k+=1
 	return (n,k)
     
-#Miller Rabin
-#Devuelve True si un numero es compuesto
+# Miller Rabin
+# Devuelve True si un numero es compuesto
 def miller_rabin(n,a):
 	(q,k)=sacar_los_2(n-1)
 	a1=exp_rapida(a,q,n)
@@ -42,10 +46,10 @@ def miller_rabin(n,a):
 	return True
 
 
-#Devuelve True si es primo
+# Devuelve True si es primo
 def es_primo(n, rnd=default_pseudo_random, k=DEFAULT_ITERATION):
 	primos_chicos=[2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97,101]
-    #Optimizacion, chequeo contra varios primos chicos
+    # Optimizacion, chequeo contra varios primos chicos
 	for prim in primos_chicos:
 		if n==prim:
 			return True
@@ -54,26 +58,29 @@ def es_primo(n, rnd=default_pseudo_random, k=DEFAULT_ITERATION):
 	for i in range(k):
 		a=rnd.randint(2,n-1)
 		if miller_rabin(n,a):
-		#Si Miller Rabin devuelve True, entonces el numero es compuesto
+		# Si Miller Rabin devuelve True, entonces el numero es compuesto
 			return False 
-	#Si llegue hasta aca es que no encontre ningun testigo de compositeness
-	#probablemente sea primo	
+	# Si llegue hasta aca es que no encontre ningun testigo de compositeness
+	# probablemente sea primo	
 	return True 
     
-    
+# Devuelve un primo de 128*8 bits    
 def hallar_primo(size=128, rnd=default_crypto_random, k=DEFAULT_ITERATION):
 	for i in range(20000):
 		n=default_crypto_random.getrandbits(8*size)
-		#Me aseguro que no sea multiplo de 2
+		# Me aseguro que no sea multiplo de 2
 		if (n%2==0):
 			n+=1
 		if es_primo(n,default_pseudo_random,100):
 			return n
 	return -1
     
+# Toma un string de octetos y devuelve el entero que este represena en base 16
 def os2ip(x):
 	return int(x.replace(' ',''),16)
-    
+
+# Toma un entero y devuelve un string de octetos, en big endian, padeado con
+# ceros hasta x_len
 def i2osp(x, x_len):
 	y=(hex(x)[2:])[::-1]
 	# Tomo la representacion hexa, le quito el '0x' y la invierto
@@ -84,12 +91,21 @@ def i2osp(x, x_len):
 	
 	return y
 	
+	
+# Primitiva de encriptacion de RSA	
 def rsaep(m, n):
-	#m es la clave y n el mensaje
-	# modulo    = m[0]
-	# exponente = m[1]
+	# m es la clave y n el mensaje
+	#  modulo    = m[0]
+	#  exponente = m[1]
 	return 0
 	
+# Primitiva de desencriptacion de RSA
+def rsadp(c,m):
+	
+	return 0
+
+
+# Devuelve una mascara como especificado en el documento
 def mgf1(mgf_seed, mask_len, hash_class=hashlib.sha1):
 	T=''
 	h=hash_class()
@@ -101,16 +117,4 @@ def mgf1(mgf_seed, mask_len, hash_class=hashlib.sha1):
 			T=T+h.hexdigest()
 		return T
 	
-	
-print mgf1('asfqewwww',2**6)
-	
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
