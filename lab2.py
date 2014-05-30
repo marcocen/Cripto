@@ -138,12 +138,12 @@ def rsadp(k,c):
 		if len(k[1])>0:
 			R=k[0][0]
 			for i in range(len(k[1])):
-				print i
+				#print i
 				if i==0:
-					print k[0][1]
+					#print k[0][1]
 					R=R*k[0][1]
 				else:
-					print k[1][i-1][0]
+					#print k[1][i-1][0]
 					R=R*k[1][i-1][0]
 				mi=exp_rapida(c,k[1][i][1],k[1][i][0])
 				h=(mi-m)*k[1][i][2]%k[1][i][0]
@@ -180,6 +180,8 @@ dP, dQ = 848189,303739
 qInv = 355905 
 n = r1*r2*r3*r4
 
+
+print rsaep((r1*r2*r3*r4,e),2781226353634542850957010)
 print rsadp(((r1,r2,dP,dQ,qInv), [(r3,d3,t3),(r4,d4,t4)]),e)
 
 
