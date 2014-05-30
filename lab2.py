@@ -78,7 +78,7 @@ def es_primo(n, rnd=default_pseudo_random, k=DEFAULT_ITERATION):
 			return True
 		if n%prim==0:
 			return False
-	for i in range(k):
+	for _ in range(k):
 		a=rnd.randint(2,n-1)
 		if miller_rabin(n,a):
 		# Si Miller Rabin devuelve True, entonces el numero es compuesto
@@ -125,46 +125,31 @@ def rsaep(m, n):
 	return exp_rapida(n,m[1],m[0])
 	
 # Primitiva de desencriptacion de RSA
-def rsadp(c,m):
+def rsadp(k,c):
 	# c es la clave de la especificacion, hay dos casos
 	# 	1) c=(n,d), donde n es el modulo y d el exponente
 	#	2) c=((p,q,dP,dQ,qInv),[(ri,di,ti)])
-	#
-	#
 	
-	if isinstance(c[1],list):
-		p,q,dp,dq,qinv=c[0]
-		tuplas=c[1]
-		m1=exp_rapida(m,dp,p)
-		m2=exp_rapida(m,dq,q)
-		emes=list()
-		for i in range(len(tuplas)):
-			emes.append(exp_rapida(m,tuplas[i][1],tuplas[i][0]))
-		h=(m1-m2)*qinv%p
-		m=m2+q*h
-		
-		print len(tuplas)
-		if len(tuplas)>0:
-			erres=[p,q]
-			des=[dp,dq]
-			tes=[0,qinv]
-			for i in range(len(tuplas)):
-				erres.append(tuplas[i][0])
-				des.append(tuplas[i][1])
-				tes.append(tuplas[i][2])	
-			R=erres[0]
-			print len(erres)
-			print len(des)
-			print len(tes)
-			for i in range(2,len(erres)):
-				print 'iteracion '
-				print i-2
-				R=R*erres[i-1]
-				mi=exp_rapida(m,des[i],erres[i])
-				h=(mi-m)*tes[i]%erres[i]
+	if isinstance(k[1],list):
+		m1=exp_rapida(c,k[0][2],k[0][0])
+		m2=exp_rapida(c,k[0][3],k[0][1])
+		h=(m1-m2)*k[0][4]%k[0][0]	
+		m=m2+k[0][1]*h
+		if len(k[1])>0:
+			R=k[0][0]
+			for i in range(len(k[1])):
+				print i
+				if i==0:
+					print k[0][1]
+					R=R*k[0][1]
+				else:
+					print k[1][i-1][0]
+					R=R*k[1][i-1][0]
+				mi=exp_rapida(c,k[1][i][1],k[1][i][0])
+				h=(mi-m)*k[1][i][2]%k[1][i][0]
 				m=m+R*h
 		return m			
-	m=exp_rapida(m,c[1],c[0])
+	m=exp_rapida(c,k[1],k[0])
 	return m
 
 
@@ -194,10 +179,9 @@ d3, d4 = 67575,878571
 dP, dQ = 848189,303739 
 qInv = 355905 
 n = r1*r2*r3*r4
- 
- 
-print rsadp(((r1,r2,dP,dQ,qInv), [(r3,d3,t3),(r4,d4,t4)]),e) 
-print  rsaep((n,e),1008117944153308176100846) 
+
+print rsadp(((r1,r2,dP,dQ,qInv), [(r3,d3,t3),(r4,d4,t4)]),e)
+
 
 
 
